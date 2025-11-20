@@ -30,17 +30,20 @@ const NavBar = () => {
             Home
           </Link>
           
-          <div className="favorites-badge-wrapper">
-            <span className="nav-link favorites-link" aria-label={`Favorites (${favorites.length} items)`}>
+          <Link
+            to="/favorites"
+            className={`nav-link favorites-link ${location.pathname === '/favorites' ? 'active' : ''}`}
+            aria-label={`Favorites (${favorites.length} items)`}
+            aria-current={location.pathname === '/favorites' ? 'page' : undefined}
+          >
               <span className="link-icon">❤️</span>
               Favorites
               {favorites.length > 0 && (
-                <span className="favorites-count" aria-label={`${favorites.length} favorites`}>
+                <span className="favorites-count" aria-hidden="true">
                   {favorites.length}
                 </span>
               )}
-            </span>
-          </div>
+          </Link>
         </div>
       </div>
     </nav>

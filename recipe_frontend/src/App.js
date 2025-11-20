@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import RecipeDetail from './pages/RecipeDetail';
+import Favorites from './pages/Favorites';
 import './App.css';
 
 // PUBLIC_INTERFACE
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/recipe/:id" element={<RecipeDetail />} />
+            <Route path="/favorites" element={<Favorites />} />
           </Routes>
         </div>
       </Router>
