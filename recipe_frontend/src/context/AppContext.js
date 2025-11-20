@@ -18,7 +18,7 @@ export const useAppContext = () => {
 // PUBLIC_INTERFACE
 /**
  * App Context Provider component
- * Manages global state for search, filters, and favorites
+ * Manages global state for search, filters, favorites, and pagination
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components
  */
@@ -30,6 +30,11 @@ export const AppProvider = ({ children }) => {
     maxTime: '',
   });
   const [favorites, setFavorites] = useState([]);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Load favorites from localStorage on mount
   useEffect(() => {
@@ -97,16 +102,18 @@ export const AppProvider = ({ children }) => {
 
   // PUBLIC_INTERFACE
   /**
-   * Update filter values
+   * Update filter values and reset pagination
    * @param {Object} newFilters - New filter values to merge
    */
   const updateFilters = (newFilters) => {
     setFilters({ ...filters, ...newFilters });
+    setCurrentPage(1);
+    setHasMore(true);
   };
 
   // PUBLIC_INTERFACE
   /**
-   * Reset all filters to default values
+   * Reset all filters to default values and reset pagination
    */
   const resetFilters = () => {
     setFilters({
@@ -114,6 +121,28 @@ export const AppProvider = ({ children }) => {
       diet: '',
       maxTime: '',
     });
+    setCurrentPage(1);
+    setHasMore(true);
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Reset pagination to initial state
+   */
+  const resetPagination = () => {
+    setCurrentPage(1);
+    setHasMore(true);
+    setIsLoadingMore(false);
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Increment page number for loading next page
+   */
+  const loadNextPage = () => {
+    if (hasMore && !isLoadingMore) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   const value = {
@@ -127,6 +156,15 @@ export const AppProvider = ({ children }) => {
     removeFavorite,
     toggleFavorite,
     isFavorite,
+    // Pagination state and actions
+    currentPage,
+    setCurrentPage,
+    hasMore,
+    setHasMore,
+    isLoadingMore,
+    setIsLoadingMore,
+    resetPagination,
+    loadNextPage,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

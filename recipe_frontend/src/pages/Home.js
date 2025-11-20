@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppContext } from '../context/AppContext';
 import SearchBar from '../components/SearchBar';
 import FiltersPanel from '../components/FiltersPanel';
@@ -8,16 +8,31 @@ import './Home.css';
 
 // PUBLIC_INTERFACE
 /**
- * Home page component with recipe browsing and filtering
+ * Home page component with recipe browsing, filtering, and infinite scroll
  * @returns {JSX.Element} Home component
  */
 const Home = () => {
-  const { searchQuery, filters } = useAppContext();
+  const { 
+    searchQuery, 
+    filters, 
+    currentPage,
+    hasMore,
+    setHasMore,
+    isLoadingMore,
+    setIsLoadingMore,
+    loadNextPage,
+    resetPagination
+  } = useAppContext();
+  
   const [recipes, setRecipes] = useState([]);
   const [featuredRecipes, setFeaturedRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Ref for intersection observer
+  const observerTarget = useRef(null);
+  const loadingRef = useRef(false);
 
   // Load featured recipes on mount
   useEffect(() => {
@@ -34,19 +49,45 @@ const Home = () => {
     loadFeaturedRecipes();
   }, []);
 
-  // Load recipes when search or filters change
-  useEffect(() => {
-    const loadRecipes = async () => {
-      try {
+  // PUBLIC_INTERFACE
+  /**
+   * Load recipes with pagination support
+   * @param {number} page - Page number to load
+   * @param {boolean} append - Whether to append to existing recipes or replace
+   */
+  const loadRecipes = useCallback(async (page, append = false) => {
+    // Prevent duplicate requests
+    if (loadingRef.current) return;
+    
+    try {
+      loadingRef.current = true;
+      
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
         setLoading(true);
-        setError(null);
-        const data = await fetchRecipes(filters, searchQuery);
-        setRecipes(data);
-      } catch (err) {
-        setError(err.message || 'Failed to load recipes');
-        console.error('Error loading recipes:', err);
-        // Set mock data for demo purposes
-        setRecipes([
+        setRecipes([]);
+      }
+      
+      setError(null);
+      
+      const result = await fetchRecipes(filters, searchQuery, page, 12);
+      
+      if (append) {
+        setRecipes(prev => [...prev, ...result.recipes]);
+      } else {
+        setRecipes(result.recipes);
+      }
+      
+      setHasMore(result.hasMore);
+      
+    } catch (err) {
+      setError(err.message || 'Failed to load recipes');
+      console.error('Error loading recipes:', err);
+      
+      // Set mock data for demo purposes only on first page
+      if (!append) {
+        const mockRecipes = [
           {
             id: '1',
             name: 'Classic Margherita Pizza',
@@ -76,14 +117,53 @@ const Home = () => {
             cookTime: 25,
             difficulty: 'Hard',
           },
-        ]);
-      } finally {
-        setLoading(false);
+        ];
+        setRecipes(mockRecipes);
+        setHasMore(false);
+      }
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+      loadingRef.current = false;
+    }
+  }, [filters, searchQuery, setHasMore, setIsLoadingMore]);
+
+  // Reset and load first page when search or filters change
+  useEffect(() => {
+    resetPagination();
+    setRecipes([]);
+    loadRecipes(1, false);
+  }, [searchQuery, filters, resetPagination]);
+
+  // Load next page when currentPage changes (triggered by infinite scroll)
+  useEffect(() => {
+    if (currentPage > 1) {
+      loadRecipes(currentPage, true);
+    }
+  }, [currentPage, loadRecipes]);
+
+  // Set up IntersectionObserver for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !loading) {
+          loadNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
       }
     };
-
-    loadRecipes();
-  }, [searchQuery, filters]);
+  }, [hasMore, isLoadingMore, loading, loadNextPage]);
 
   // PUBLIC_INTERFACE
   /**
@@ -91,6 +171,16 @@ const Home = () => {
    */
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Handle manual Load More button click
+   */
+  const handleLoadMore = () => {
+    if (hasMore && !isLoadingMore) {
+      loadNextPage();
+    }
   };
 
   const hasSearchOrFilters = searchQuery || filters.cuisine || filters.diet || filters.maxTime;
@@ -146,6 +236,41 @@ const Home = () => {
               {hasSearchOrFilters ? '🔍 Search Results' : '📖 All Recipes'}
             </h2>
             <RecipeGrid recipes={recipes} loading={loading} error={error} />
+            
+            {/* Intersection Observer Target */}
+            <div ref={observerTarget} style={{ height: '20px' }} />
+            
+            {/* Loading more indicator */}
+            {isLoadingMore && (
+              <div className="loading-more" role="status" aria-live="polite">
+                <div className="loading-spinner-small">
+                  <div className="spinner-small"></div>
+                  <p className="loading-text-small">Loading more recipes...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Load More Button Fallback */}
+            {!loading && !isLoadingMore && hasMore && recipes.length > 0 && (
+              <div className="load-more-container">
+                <button 
+                  className="load-more-button"
+                  onClick={handleLoadMore}
+                  aria-label="Load more recipes"
+                >
+                  Load More Recipes
+                </button>
+              </div>
+            )}
+            
+            {/* End of list indicator */}
+            {!loading && !hasMore && recipes.length > 0 && (
+              <div className="end-of-list">
+                <p className="end-of-list-text">
+                  🎉 You've reached the end of the list!
+                </p>
+              </div>
+            )}
           </section>
         </main>
       </div>

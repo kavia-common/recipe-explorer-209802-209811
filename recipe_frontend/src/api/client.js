@@ -77,12 +77,14 @@ export const apiPost = async (endpoint, data) => {
 
 // PUBLIC_INTERFACE
 /**
- * Fetch all recipes with optional filters
+ * Fetch recipes with optional filters and pagination
  * @param {Object} filters - Filter parameters (cuisine, diet, maxTime)
  * @param {string} searchQuery - Search query string
- * @returns {Promise<Array>} Array of recipes
+ * @param {number} page - Page number (default: 1)
+ * @param {number} pageSize - Number of items per page (default: 12)
+ * @returns {Promise<Object>} Object containing recipes array, total count, and hasMore flag
  */
-export const fetchRecipes = async (filters = {}, searchQuery = '') => {
+export const fetchRecipes = async (filters = {}, searchQuery = '', page = 1, pageSize = 12) => {
   let endpoint = '/recipes';
   const params = new URLSearchParams();
   
@@ -90,11 +92,32 @@ export const fetchRecipes = async (filters = {}, searchQuery = '') => {
   if (filters.cuisine) params.append('cuisine', filters.cuisine);
   if (filters.diet) params.append('diet', filters.diet);
   if (filters.maxTime) params.append('maxTime', filters.maxTime);
+  params.append('page', page.toString());
+  params.append('pageSize', pageSize.toString());
   
   const queryString = params.toString();
   if (queryString) endpoint += `?${queryString}`;
   
-  return await apiGet(endpoint);
+  const result = await apiGet(endpoint);
+  
+  // Handle both paginated response format and simple array format
+  if (Array.isArray(result)) {
+    // If API returns simple array, simulate pagination
+    return {
+      recipes: result,
+      total: result.length,
+      hasMore: false,
+      page: 1
+    };
+  }
+  
+  // If API returns paginated format
+  return {
+    recipes: result.recipes || result.data || [],
+    total: result.total || 0,
+    hasMore: result.hasMore !== undefined ? result.hasMore : false,
+    page: result.page || page
+  };
 };
 
 // PUBLIC_INTERFACE

@@ -134,6 +134,99 @@
   gap: 0.5rem;
 }
 
+/* Loading More Indicator */
+.loading-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+.loading-spinner-small {
+  text-align: center;
+}
+
+.spinner-small {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid #FDF2F8;
+  border-top: 3px solid #EC4899;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text-small {
+  font-size: 0.9375rem;
+  color: #6B7280;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Load More Button */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-top: 1.5rem;
+}
+
+.load-more-button {
+  background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 20px;
+  padding: 1rem 2.5rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+}
+
+.load-more-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.3);
+}
+
+.load-more-button:active {
+  transform: translateY(0);
+}
+
+.load-more-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* End of List Indicator */
+.end-of-list {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  margin-top: 1.5rem;
+}
+
+.end-of-list-text {
+  font-size: 1.125rem;
+  color: #8B5CF6;
+  font-weight: 600;
+  margin: 0;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
+  border-radius: 16px;
+  display: inline-block;
+}
+
 /* Responsive design */
 @media (max-width: 1024px) {
   .home-content {
@@ -180,5 +273,25 @@
 
   .featured-section {
     margin-bottom: 2rem;
+  }
+
+  .spinner-small {
+    width: 32px;
+    height: 32px;
+  }
+
+  .loading-text-small {
+    font-size: 0.875rem;
+  }
+
+  .load-more-button {
+    width: 100%;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+
+  .end-of-list-text {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
   }
 }
