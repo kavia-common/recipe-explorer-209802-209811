@@ -1,28 +1,28 @@
 .recipe-card {
-  background: #FFFFFF;
-  border-radius: 20px;
+  background: var(--color-bg);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  border: 2px solid transparent;
+  border: 1px solid var(--color-border);
 }
 
 .recipe-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(236, 72, 153, 0.2);
-  border-color: #EC4899;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-accent);
 }
 
 .recipe-card-image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 75%;
+  padding-top: 75%; /* 4:3 aspect ratio */
   overflow: hidden;
-  background: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
+  background: var(--color-surface);
 }
 
 .recipe-card-image {
@@ -36,58 +36,51 @@
 }
 
 .recipe-card:hover .recipe-card-image {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .favorite-button {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--color-border);
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  color: var(--color-text);
 }
 
 .favorite-button:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  transform: scale(1.1);
+  background: var(--color-bg);
 }
 
 .favorite-button.favorited {
-  background: #EC4899;
-  animation: heartbeat 0.3s ease;
-}
-
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
+  background: var(--color-accent);
+  color: var(--color-bg);
 }
 
 .recipe-time-badge {
   position: absolute;
   bottom: 12px;
   left: 12px;
-  background: rgba(139, 92, 246, 0.95);
-  color: #FFFFFF;
-  padding: 0.5rem 0.875rem;
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--color-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -103,14 +96,14 @@
 .recipe-card-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #374151;
-  margin: 0 0 0.75rem 0;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
   line-height: 1.3;
 }
 
 .recipe-card-description {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: var(--color-muted);
   margin: 0 0 1rem 0;
   line-height: 1.5;
   flex-grow: 1;
@@ -120,61 +113,52 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-top: auto;
+  padding-top: 1rem;
 }
 
 .recipe-tag {
   padding: 0.375rem 0.75rem;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 0.8125rem;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-}
-
-.cuisine-tag {
-  background: #FDF2F8;
-  color: #EC4899;
-}
-
-.diet-tag {
-  background: #F3E8FF;
-  color: #8B5CF6;
-}
-
-.recipe-difficulty {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
 }
 
 .difficulty-label {
-  color: #6B7280;
+  color: var(--color-muted);
   font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .difficulty-value {
   padding: 0.25rem 0.625rem;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   font-size: 0.8125rem;
+  border: 1px solid;
 }
 
 .difficulty-easy {
-  background: #D1FAE5;
-  color: #10B981;
+  border-color: #a0a0a0;
+  color: #333;
 }
 
 .difficulty-medium {
-  background: #FEF3C7;
-  color: #F59E0B;
+  border-color: #666;
+  color: #111;
+  background: #f0f0f0;
 }
 
 .difficulty-hard {
-  background: #FEE2E2;
-  color: #EF4444;
+  border-color: #000;
+  color: #fff;
+  background: #333;
 }
 
 /* Responsive design */
@@ -188,13 +172,13 @@
   }
 
   .favorite-button {
-    width: 40px;
-    height: 40px;
-    font-size: 1.25rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
   }
 
   .recipe-time-badge {
     font-size: 0.8125rem;
-    padding: 0.4rem 0.75rem;
+    padding: 0.4rem 0.6rem;
   }
 }
